@@ -3,9 +3,13 @@ import mongoose from "mongoose";
 import { appName, dbName } from "./constants.js";
 import express from "express";
 
+if (process.platform === "win32") {
+  const dns = await import("dns");
+  dns.setServers(["1.1.1.1", "8.8.8.8"]);
+}
+
 const appPort = process.env.APP_PORT ?? 5000;
 const appUrl = process.env.MONGODB_URI;
-console.log(appUrl);
 
 const app = express();
 (async () => {
@@ -20,6 +24,9 @@ const app = express();
       console.log(`${appName} is started running on ${appPort}`);
     });
   } catch (error) {
-    console.error(`ERROR ${error}`);
+    console.error("Full error:", JSON.stringify(error, null, 2));
+    console.error("Message:", error.message);
+    console.error("Code:", error.code);
+    console.error("Reason:", error.reason);
   }
 })();
