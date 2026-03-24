@@ -1,5 +1,6 @@
 {
   "name": "TreadStream",
+  "author": "Meghsham Kapure",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -7,14 +8,16 @@
     "start": "node src/main.js",
     "dev": "nodemon src/main.js"
   },
+  "type": "module",
   "keywords": [],
-  "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.32.1",
   "devDependencies": {
-    "nodemon": "^3.1.14"
+    "nodemon": "^3.1.14",
+    "prettier": "^3.8.1"
   },
   "dependencies": {
+    "dotenv": "^17.3.1",
     "mongoose": "^9.3.2"
   }
 }
