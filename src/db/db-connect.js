@@ -7,7 +7,7 @@ if (process.platform === "win32") {
 }
 
 async function connectDatabase() {
-  try {
+  try {e
     const connectionInstance = await mongoose.connect(
       `${process.env.MONGODB_URI}/${dbName}`
     );
