@@ -1,5 +1,6 @@
 import { v2 as cloudinary } from "cloudinary";
 import fs from "node:fs";
+import ApiError from "./api-error.js";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -12,13 +13,13 @@ const uploadOnCloudinary = async (localFilePath) => {
     if (!localFilePath) return null; //return error here
     const response = await cloudinary.uploader.upload(localFilePath, {
       resource_type: "auto",
-    }); // research this
-    console.log(`File Updated Successfully on  ${response.url}`);
-    return response; // just give response.url
+    });
+    fs.unlinkSync(localFilePath);
+    return response;
   } catch (error) {
-    fs.unlinkSync(localFilePath); // delete temp file from server after cloudinary upload failed
-    return null; //return error here
+    fs.unlinkSync(localFilePath);
+    return new ApiError(500, "Cloudinary upload failed", [error]);
   }
 };
 
-export { uploadOnCloudinary };
+export default uploadOnCloudinary;

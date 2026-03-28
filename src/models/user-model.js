@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 
 const userSchema = mongoose.Schema(
   {
-    username: {
+    userName: {
       type: String,
       required: true,
       unique: true,
@@ -28,7 +28,7 @@ const userSchema = mongoose.Schema(
       index: true,
     },
 
-    avatar: {
+    avatarImage: {
       type: String, // Cloudinary url
       required: true,
       trim: true,
@@ -41,7 +41,7 @@ const userSchema = mongoose.Schema(
 
     watchHistory: [
       {
-        type: mongoose.Schema.objectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "Video",
       },
     ],
@@ -53,52 +53,49 @@ const userSchema = mongoose.Schema(
 
     refreshToken: {
       type: String,
-      required: true,
+      // required: true,
     },
   },
-  { timeStamps: true }
+  { timestamps: true }
 );
 
 userSchema.pre("save", async function (next) {
-  if (!this.usModified("password")) return;
-  this.password = bcrypt.hash(this.password, 10);
-  next();
+  if (!this.isModified("password")) return;
+  this.password = await bcrypt.hash(this.password, 10);
 });
 
 userSchema.methods.isPasswordCorrect = async function (password) {
-  await bcrypt.compare(password, this.password);
+  return await bcrypt.compare(password, this.password);
 };
 
 userSchema.methods.generateAccessToken = async function () {
-  return await (jwt,
-  sign(
+  return await jwt.sign(
     {
       _id: this._id,
       email: this.email,
-      username: this.username,
+      userName: this.userName,
       fullName: this.fullName,
     },
     process.env.ACCESS_TOKEN_SECRET,
     {
       expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
     }
-  ));
+  );
 };
 
 userSchema.methods.generateRefreshToken = async function () {
-  return await (jwt,
-  sign(
+  return await jwt.sign(
     {
       _id: this._id,
       email: this.email,
-      username: this.username,
+      userName: this.userName,
       fullName: this.fullName,
     },
     process.env.REFRESH_TOKEN_SECRET,
     {
       expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
     }
-  ));
+  );
 };
 
 const User = mongoose.model("User", userSchema);

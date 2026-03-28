@@ -7,18 +7,15 @@ if (process.platform === "win32") {
 }
 
 async function connectDatabase() {
-  try {e
+  try {
     const connectionInstance = await mongoose.connect(
       `${process.env.MONGODB_URI}/${dbName}`
     );
-    console.log(
+    console.info(
       `MONGODB connected with DB Host : ${connectionInstance.connection.host}`
     );
   } catch (error) {
-    console.error("Full error:", JSON.stringify(error, null, 2));
-    console.error("Message:", error.message);
-    console.error("Code:", error.code);
-    console.error("Reason:", error.reason);
+    console.error(`Database connection failed with error : ${error}`);
     process.exit(1);
   }
 }

@@ -1,8 +1,11 @@
 import "dotenv/config";
 import connectDatabase from "./db/db-connect.js";
+import app from "./app.js";
 
 const appPort = process.env.APP_PORT ?? 8080;
 const appName = process.env.APP_NAME ?? "Thread Stream";
+
+console.info(`Staring ${appName} at ${new Date().toLocaleString()} `);
 
 connectDatabase()
   .then(() => {
@@ -11,12 +14,10 @@ connectDatabase()
       throw new Error(error.message);
     });
 
-    app.listen(appName, () =>
-      console.log(`${appName} started listening on port ${appPort}`)
+    app.listen(appPort, () =>
+      console.info(`${appName} started listening on port ${appPort}`)
     );
   })
   .catch((error) =>
     console.error(`Database Connection Failed with Error ${error}`)
   );
-
-console.log("Hello World !!!");

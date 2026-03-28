@@ -38,3 +38,10 @@ nyc_output/
 package-lock.json
 yarn.lock
 pnpm-lock.yaml
+
+
+# Ignore everything inside public/temp
+/public/temp/*
+
+# But do not ignore this .gitignore itself (if placed inside public/temp)
+!/public/temp/.gitignore
