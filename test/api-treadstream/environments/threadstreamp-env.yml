@@ -1,4 +1,0 @@
-name: maverick
-variables:
-  - name: treadstream-local
-    value: http://localhost:8000/api/v1

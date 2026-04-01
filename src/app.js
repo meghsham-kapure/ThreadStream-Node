@@ -22,12 +22,12 @@ app.use(express.static("public"));
 app.use(cookieParser());
 
 // app health check
-app.get("/health-check", (req, res) => {
+app.get("/thread-stream-api/v1/health-check", (req, res) => {
   res.json({ message: "hello world" });
 });
 
 // routes import and declaration
 import userRouter from "./routes/user-routes.js";
-app.use("/api/v1/user", userRouter);
+app.use("/thread-stream-api/v1/user", userRouter);
 
 export default app;

@@ -1,3 +1,4 @@
+
 class ApiError extends Error {
   constructor(
     statusCode = 500,
@@ -13,7 +14,6 @@ class ApiError extends Error {
     this.errors = errors;
     this.success = false;
 
-    console.log(data);
 
     if (stack) this.stack = stack;
     else Error.captureStackTrace(this, this.constructor);
