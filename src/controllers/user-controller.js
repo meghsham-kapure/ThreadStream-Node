@@ -86,9 +86,11 @@ const registerUser = asyncHandler(async (request, response) => {
   }
 
   // 3. If validation fails return error
-  if (Object.entries(errorDescription).length !== 0)
-    throw new ApiError(400, "Validation failed!", errorDescription);
+  if (Object.entries(errorDescription).length !== 0) {
+    console.log(errorDescription);
 
+    throw new ApiError(400, "Validation failed!", errorDescription);
+  }
   // 4. Check whether user exists already
   const existingUser = await User.findOne({
     $or: [{ userName }, { email }],
@@ -282,4 +284,179 @@ const logoutUser = asyncHandler(async (request, response) => {
     .json(new ApiResponse(200, {}, "User logged out!"));
 });
 
-export { registerUser, loginUser, refreshAccessToken, logoutUser };
+const getUserDetails = asyncHandler((request, response) => {
+  return response
+    .status(200)
+    .json(new ApiResponse(200, request.user, "User Found!"));
+});
+
+const updatePassword = asyncHandler(async (request, response) => {
+  const { oldPassword, newPassword, newPasswordConfirmation } = request.body;
+
+  console.log(request.body);
+
+
+  if (!oldPassword && !newPassword && !newPasswordConfirmation) {
+    throw new ApiError(
+      400,
+      "currentPassword and NewPassword could not be empty!"
+    );
+  }
+
+  if (newPassword !== newPasswordConfirmation) {
+    throw new ApiError(
+      400,
+      "NewPassword and NewPasswordConfirmation does not match!"
+    );
+  }
+
+  const getUser = await User.findById(request.user?._id);
+
+  const isPasswordCorrect = await getUser.isPasswordCorrect(oldPassword);
+
+  if (!isPasswordCorrect) {
+    throw new ApiError(400, "Wrong old password!");
+  }
+
+  getUser.password = newPassword;
+
+  await getUser.save({ validateBeforeSave: false });
+
+  return response
+    .status(200)
+    .json(new ApiResponse(200, {}, "Password Changed!"));
+});
+
+const updateUserFullName = asyncHandler(async (request, response) => {
+  const { fullName } = request.body;
+
+  if (!validateFullName(fullName)) {
+    throw new ApiError(
+      400,
+      "Full name must be 6–32 letters (letters, spaces, dots, and hyphens allowed"
+    );
+  }
+
+  const getUpdatedUser = await User.findByIdAndUpdate(
+    request.user?._id,
+    {
+      $set: { fullName: fullName },
+    },
+    { new: true }
+  ).select("_id fullName");
+
+  console.log("OK");
+  return response
+    .status(200)
+    .json(new ApiResponse(200, getUpdatedUser, "User Full Name Updated"));
+});
+
+const updateUserName = asyncHandler(async (request, response) => {
+  const { userName } = request.body;
+
+  if (!validateUserName(userName)) {
+    throw new ApiError(
+      400,
+      "Username must be 4–16 chars (letter and underscores allowed[but no double __])"
+    );
+  }
+
+  const getUpdatedUser = await User.findByIdAndUpdate(
+    request.user?._id,
+    {
+      $set: {
+        userName: userName,
+      },
+    },
+    {
+      new: true, // return the data after the db update
+    }
+  ).select("_id userName");
+
+  return response
+    .status(200)
+    .json(new ApiResponse(200, getUpdatedUser, "User username Updated"));
+});
+
+const updateEmail = asyncHandler(async (request, response) => {
+  const { email } = request.body;
+
+  if (!validateEmail(email)) {
+    throw new ApiError(400, "Invalid email format (4–32 characters)");
+  }
+
+  const getUpdatedUser = await User.findByIdAndUpdate(
+    request.user?._id,
+    {
+      $set: {
+        email: email,
+      },
+    },
+    {
+      new: true, // return the data after the db update
+    }
+  ).select("_id email");
+
+  return response
+    .status(200)
+    .json(new ApiResponse(200, getUpdatedUser, "User email Updated"));
+});
+
+const updateUserAvatarImage = asyncHandler(async (request, response) => {
+  const avatarImageLocalPath = request.file?.path;
+  if (!avatarImageLocalPath) {
+    throw new ApiError(400, "Avatar Image file missing!");
+  }
+
+  const avatarOnCloudinary = await uploadOnCloudinary(avatarImageLocalPath);
+
+  if (!avatarOnCloudinary.url) {
+    throw new ApiError(400, "Error while uploading avatar image");
+  }
+
+  const getUpdatedUser = await User.findByIdAndUpdate(
+    request.user?._id,
+    { $set: { avatarImage: avatarOnCloudinary.url } },
+    { new: true }
+  ).select("-password");
+
+  response.status(200).json(new ApiResponse(200, getUpdatedUser, "User Avatar Image Updated!"))
+});
+
+const updateUserCoverImage = asyncHandler(async (request, response) => {
+  const coverImageLocalPath = request.file?.path;
+
+  if (!coverImageLocalPath) {
+    throw new ApiError(400, "Local Image file missing!");
+  }
+
+  const coverImageOnCloudinary = await uploadOnCloudinary(coverImageLocalPath);
+
+  if (!coverImageOnCloudinary.url) {
+    throw new ApiError(400, "Error while uploading local image");
+  }
+
+  const getUpdatedUser = await User.findByIdAndUpdate(
+    request.user?._id,
+    {
+      $set: { coverImage: coverImageOnCloudinary.url },
+    },
+    { new: true }
+  ).select("-password");
+
+  response.status(200).json(new ApiResponse(200, getUpdatedUser, "User Cover Image Updated!"))
+});
+
+export {
+  registerUser,
+  loginUser,
+  refreshAccessToken,
+  logoutUser,
+  getUserDetails,
+  updatePassword,
+  updateUserFullName,
+  updateUserName,
+  updateEmail,
+  updateUserAvatarImage,
+  updateUserCoverImage,
+};
