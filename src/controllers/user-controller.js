@@ -184,13 +184,11 @@ const loginUser = asyncHandler(async (request, response) => {
     "-password -refreshToken"
   );
 
-  const options = authCookieOptions;
-
   // 8. Return the access token in the response cookies to the client
   return response
     .status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
+    .cookie("accessToken", accessToken, authCookieOptions)
+    .cookie("refreshToken", refreshToken, authCookieOptions)
     .json(
       new ApiResponse(
         200,
@@ -235,8 +233,6 @@ const refreshAccessToken = asyncHandler(async (request, response) => {
     }
 
     // If refresh token  matched then set create new  accessToken and refreshToken
-    const options = authCookieOptions;
-
     const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
       getUser._id
     );
@@ -244,12 +240,12 @@ const refreshAccessToken = asyncHandler(async (request, response) => {
     // Override the cookie token or send tokens in the body for application
     return response
       .status(200)
-      .cookie("accessToken", accessToken, options)
-      .cookie("refreshToken", refreshToken, options)
+      .cookie("accessToken", accessToken, authCookieOptions)
+      .cookie("refreshToken", refreshToken, authCookieOptions)
       .json(
         new ApiResponse(
           200,
-          {
+          { 
             accessToken,
             refreshToken,
           },
@@ -267,21 +263,15 @@ const logoutUser = asyncHandler(async (request, response) => {
   // 1. Find the  logged in user with given id, if found then clear "refreshToken" fields
   await User.findByIdAndUpdate(
     request.user._id,
-    {
-      $set: { refreshToken: undefined },
-    },
-    {
-      new: true,
-    }
+    { $set: { refreshToken: undefined } },
+    { new: true }
   );
 
   // 2. In response clear cookies
-  const options = authCookieOptions;
-
   return response
     .status(200)
-    .clearCookie("accessToken", options)
-    .clearCookie("refreshToken", options)
+    .clearCookie("accessToken", authCookieOptions)
+    .clearCookie("refreshToken", authCookieOptions)
     .json(new ApiResponse(200, {}, "User logged out!"));
 });
 
@@ -337,9 +327,7 @@ const updateUserFullName = asyncHandler(async (request, response) => {
 
   const getUpdatedUser = await User.findByIdAndUpdate(
     request.user?._id,
-    {
-      $set: { fullName: fullName },
-    },
+    { $set: { fullName: fullName } },
     { new: true }
   ).select("_id fullName");
 
@@ -360,14 +348,8 @@ const updateUserName = asyncHandler(async (request, response) => {
 
   const getUpdatedUser = await User.findByIdAndUpdate(
     request.user?._id,
-    {
-      $set: {
-        userName: userName,
-      },
-    },
-    {
-      new: true, // return the data after the db update
-    }
+    { $set: { userName: userName } },
+    { new: true } // return the data after the db update
   ).select("_id userName");
 
   return response
@@ -384,14 +366,8 @@ const updateEmail = asyncHandler(async (request, response) => {
 
   const getUpdatedUser = await User.findByIdAndUpdate(
     request.user?._id,
-    {
-      $set: {
-        email: email,
-      },
-    },
-    {
-      new: true, // return the data after the db update
-    }
+    { $set: { email: email } },
+    { new: true } // return the data after the db update
   ).select("_id email");
 
   return response
@@ -443,9 +419,7 @@ const updateUserCoverImage = asyncHandler(async (request, response) => {
 
   const getUpdatedUser = await User.findByIdAndUpdate(
     request.user?._id,
-    {
-      $set: { coverImage: coverImageOnCloudinary.url },
-    },
+    { $set: { coverImage: coverImageOnCloudinary.url } },
     { new: true }
   ).select("-password");
 
