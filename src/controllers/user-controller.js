@@ -2,10 +2,13 @@ import asyncHandler from "./../utils/async-handler.js";
 import User from "./../models/user-model.js";
 import ApiResponse from "./../utils/api-response.js";
 import ApiError from "./../utils/api-error.js";
-import uploadOnCloudinary from "./../utils/cloudinary.js";
 import fs from "node:fs";
 import jwt from "jsonwebtoken";
 import { authCookieOptions } from "./../constants.js";
+import {
+  uploadOnCloudinary,
+  removeFromCloudinary
+} from "./../utils/cloudinary.js";
 import {
   validateFullName,
   validateUserName,
@@ -87,8 +90,6 @@ const registerUser = asyncHandler(async (request, response) => {
 
   // 3. If validation fails return error
   if (Object.entries(errorDescription).length !== 0) {
-    console.log(errorDescription);
-
     throw new ApiError(400, "Validation failed!", errorDescription);
   }
   // 4. Check whether user exists already
@@ -293,9 +294,6 @@ const getUserDetails = asyncHandler((request, response) => {
 const updatePassword = asyncHandler(async (request, response) => {
   const { oldPassword, newPassword, newPasswordConfirmation } = request.body;
 
-  console.log(request.body);
-
-
   if (!oldPassword && !newPassword && !newPasswordConfirmation) {
     throw new ApiError(
       400,
@@ -345,7 +343,6 @@ const updateUserFullName = asyncHandler(async (request, response) => {
     { new: true }
   ).select("_id fullName");
 
-  console.log("OK");
   return response
     .status(200)
     .json(new ApiResponse(200, getUpdatedUser, "User Full Name Updated"));
@@ -403,7 +400,9 @@ const updateEmail = asyncHandler(async (request, response) => {
 });
 
 const updateUserAvatarImage = asyncHandler(async (request, response) => {
+
   const avatarImageLocalPath = request.file?.path;
+
   if (!avatarImageLocalPath) {
     throw new ApiError(400, "Avatar Image file missing!");
   }
@@ -420,10 +419,16 @@ const updateUserAvatarImage = asyncHandler(async (request, response) => {
     { new: true }
   ).select("-password");
 
+  if (request.user?.avatarImage) {
+    await removeFromCloudinary(request.user?.avatarImage);
+  }
+
   response.status(200).json(new ApiResponse(200, getUpdatedUser, "User Avatar Image Updated!"))
 });
 
+
 const updateUserCoverImage = asyncHandler(async (request, response) => {
+
   const coverImageLocalPath = request.file?.path;
 
   if (!coverImageLocalPath) {
@@ -443,6 +448,10 @@ const updateUserCoverImage = asyncHandler(async (request, response) => {
     },
     { new: true }
   ).select("-password");
+
+  if (request.user?.coverImage) {
+    await removeFromCloudinary(request.user?.coverImage);
+  }
 
   response.status(200).json(new ApiResponse(200, getUpdatedUser, "User Cover Image Updated!"))
 });
