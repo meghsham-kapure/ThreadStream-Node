@@ -15,6 +15,9 @@ import {
   validateEmail,
   validatePassword,
 } from "./../utils/validators.js";
+import { lookup } from 'node:dns';
+import { pipeline } from 'node:stream';
+import mongoose from 'mongoose';
 
 const generateAccessAndRefreshToken = async (userId) => {
   try {
@@ -245,7 +248,7 @@ const refreshAccessToken = asyncHandler(async (request, response) => {
       .json(
         new ApiResponse(
           200,
-          { 
+          {
             accessToken,
             refreshToken,
           },
@@ -430,6 +433,156 @@ const updateUserCoverImage = asyncHandler(async (request, response) => {
   response.status(200).json(new ApiResponse(200, getUpdatedUser, "User Cover Image Updated!"))
 });
 
+const getUserChannelProfile = asyncHandler(async (request, response) => {
+  // 1. Taking data from url as user is on channel page which has channel name is url
+  const { channelName } = request.params;
+
+  if (!channelName?.trim()) {
+    throw new ApiError(400, "channelName parameter is missing!");
+  }
+
+  const getChannels = await User.aggregate([
+
+    // Aggregation Pipeline : 1 [ select all records which have given channelName]
+    {
+      $match: {
+        userName: channelName?.toLowerCase()
+      }
+    },
+
+    // Aggregation Pipeline : 2 [ find all records which has matching users._id and subscriptions.channel ]
+    {
+      $lookup: {
+        from: "subscriptions",
+        localField: "_id",
+        foreignField: "channel",
+        as: "subscribers"
+      }
+    },
+
+    // Aggregation Pipeline : 3 [ find all records which has matching users._id and subscriptions.subscriber ]
+    {
+      $lookup: {
+        from: "subscriptions",
+        localField: "_id",
+        foreignField: "subscriber",
+        as: "subscribedTo"
+      },
+
+    },
+
+    // Aggregation Pipeline : 4
+    {
+      $addFields: {
+        subscribersCount: {
+          $size: "$subscribers"
+        },
+        channelsSubscribedTo: {
+          $size: "$subscribedTo"
+        },
+        isSubscribed: {
+          $cond: {
+            if: {
+              $in: [request.user?._id, "$subscribers.subscriber"]
+            },
+            then: true,
+            else: false
+          }
+        }
+      }
+    },
+    {
+
+      // only take what you need
+      $project: {
+        fullName: 1,
+        userName: 1,
+        subscribersCount: 1,
+        channelsSubscribedTo: 1,
+        isSubscribed: 1,
+        avatar: 1,
+        email: 1
+        // 1 = include and 0 = exclude this field in the output
+      }
+    }
+  ]);
+
+  console.log(getChannels);
+
+  if (!getChannels?.length) {
+    throw new ApiError(404, "channel does not exists!");
+  }
+
+  return response
+    .status(200)
+    .json(new ApiResponse(200, getChannels,
+      "User channels fetched successfully"
+    ))
+});
+
+const getWatchHistory = asyncHandler(async (request, response) => {
+
+  const userId = request.user?._id;
+
+  if (!userId) {
+    throw new ApiError(400, "User not found!");
+  }
+
+  const getUserHistory = await User.aggregate([
+
+    //
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(userId)
+      }
+    },
+
+    {
+      $lookup: {
+        from: "videos",
+        localField: "watchHistory",
+        foreignField: "_id",
+        as: "watchHistory",
+        pipeline: [
+          {
+            $lookup: {
+              from: "users",
+              localField: "videos",
+              foreignField: "_id",
+              as: "owner",
+              pipeline: [
+                {
+                  $project: {
+                    fullName: 1,
+                    userName: 1,
+                    avatar: 1
+                  }
+                }
+              ]
+            },
+          },
+          {
+            $addFields: {
+              owner: {
+                $first: "$owner"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]);
+
+  response
+    .status(200)
+    .json(new ApiResponse(
+      200,
+      getUserHistory[0].watchHistory,
+      "User watch history fetched!"
+    ))
+});
+
+
 export {
   registerUser,
   loginUser,
@@ -442,4 +595,6 @@ export {
   updateEmail,
   updateUserAvatarImage,
   updateUserCoverImage,
+  getUserChannelProfile,
+  getWatchHistory
 };

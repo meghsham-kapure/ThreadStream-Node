@@ -11,13 +11,16 @@ import {
   updateEmail,
   updateUserAvatarImage,
   updateUserCoverImage,
+  getUserChannelProfile,
+  getWatchHistory,
 } from "./../controllers/user-controller.js";
 import upload from "./../middlewares/multer-upload-middleware.js";
 import verifyJWT from "./../middlewares/auth-middleware.js";
 
 const userRouter = Router();
 
-userRouter.route("/register").post(
+userRouter
+  .route("/register").post(
   upload.fields([
     { name: "avatarImage", maxCount: 1 },
     { name: "coverImage", maxCount: 1 },
@@ -25,23 +28,76 @@ userRouter.route("/register").post(
   registerUser
 );
 
-userRouter.route("/login").post(loginUser);
-userRouter.route("/refresh-token").post(refreshAccessToken);
+userRouter
+  .route("/login").post(
+    loginUser
+  );
+userRouter
+  .route("/refresh-token").post(
+    refreshAccessToken
+  );
 
 // secured routes
-userRouter.route("/logout").post(verifyJWT, logoutUser);
-userRouter.route("/details").get(verifyJWT, getUserDetails);
-userRouter.route("/details/password").patch(verifyJWT, updatePassword);
-userRouter.route("/details/fullname").patch(verifyJWT, updateUserFullName);
-userRouter.route("/details/username").patch(verifyJWT, updateUserName);
-userRouter.route("/details/email").patch(verifyJWT, updateEmail);
-userRouter.route("/details/avatar-img").patch(
+userRouter
+  .route("/logout").post(
+    verifyJWT,
+    logoutUser
+  );
+userRouter
+  .route("/details").get(
+    verifyJWT,
+    getUserDetails
+  );
+
+userRouter
+  .route("/details/password").patch(
+    verifyJWT,
+    updatePassword
+  );
+
+userRouter
+  .route("/details/fullname").patch(
+    verifyJWT,
+    updateUserFullName
+  );
+
+userRouter
+  .route("/details/username").patch(
+    verifyJWT,
+    updateUserName
+  );
+
+userRouter
+  .route("/details/email").patch(
+    verifyJWT,
+    updateEmail
+  );
+
+userRouter
+  .route("/details/avatar-img").patch(
   verifyJWT,
-  upload.single('avatarImage'),
-  updateUserAvatarImage);
-userRouter.route("/details/cover-img").patch(
+  upload.single('/details/avatarImage'),
+  updateUserAvatarImage
+);
+
+userRouter
+  .route("/details/cover-img").patch(
   verifyJWT,
   upload.single('coverImage'),
-  updateUserCoverImage);
+  updateUserCoverImage
+);
+
+userRouter
+  .route("channel/:channelName").get(
+    verifyJWT,
+    getUserChannelProfile
+  );
+
+userRouter
+  .route("history").get(
+    verifyJWT,
+    getWatchHistory
+  );
+
 
 export default userRouter;
