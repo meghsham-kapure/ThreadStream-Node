@@ -11,7 +11,7 @@ import {
   updateEmail,
   updateUserAvatarImage,
   updateUserCoverImage,
-  getUserChannelProfile,
+  getUserProfile,
   getWatchHistory,
 } from "./../controllers/user-controller.js";
 import upload from "./../middlewares/multer-upload-middleware.js";
@@ -76,7 +76,7 @@ userRouter
 userRouter
   .route("/details/avatar-img").patch(
   verifyJWT,
-  upload.single('/details/avatarImage'),
+    upload.single('avatarImage'),
   updateUserAvatarImage
 );
 
@@ -88,13 +88,13 @@ userRouter
 );
 
 userRouter
-  .route("channel/:channelName").get(
+  .route("/profile/:channelName").get(
     verifyJWT,
-    getUserChannelProfile
+    getUserProfile
   );
 
 userRouter
-  .route("history").get(
+  .route("/history").get(
     verifyJWT,
     getWatchHistory
   );

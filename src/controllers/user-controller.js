@@ -18,6 +18,7 @@ import {
 import { lookup } from 'node:dns';
 import { pipeline } from 'node:stream';
 import mongoose from 'mongoose';
+import console from 'node:console';
 
 const generateAccessAndRefreshToken = async (userId) => {
   try {
@@ -53,6 +54,7 @@ const registerUser = asyncHandler(async (request, response) => {
   const { fullName, userName, password, email } = request.body;
 
   let avatarImageLocalPath;
+
   if (
     request.files &&
     Array.isArray(request.files.avatarImage) &&
@@ -93,8 +95,10 @@ const registerUser = asyncHandler(async (request, response) => {
 
   // 3. If validation fails return error
   if (Object.entries(errorDescription).length !== 0) {
+    console.error(errorDescription)
     throw new ApiError(400, "Validation failed!", errorDescription);
   }
+
   // 4. Check whether user exists already
   const existingUser = await User.findOne({
     $or: [{ userName }, { email }],
@@ -264,9 +268,9 @@ const logoutUser = asyncHandler(async (request, response) => {
   // After middleware interception
 
   // 1. Find the  logged in user with given id, if found then clear "refreshToken" fields
-  await User.findByIdAndUpdate(
+  const update = await User.findByIdAndUpdate(
     request.user._id,
-    { $set: { refreshToken: undefined } },
+    { $unset: { refreshToken: 1 } },
     { new: true }
   );
 
@@ -433,7 +437,7 @@ const updateUserCoverImage = asyncHandler(async (request, response) => {
   response.status(200).json(new ApiResponse(200, getUpdatedUser, "User Cover Image Updated!"))
 });
 
-const getUserChannelProfile = asyncHandler(async (request, response) => {
+const getUserProfile = asyncHandler(async (request, response) => {
   // 1. Taking data from url as user is on channel page which has channel name is url
   const { channelName } = request.params;
 
@@ -595,6 +599,6 @@ export {
   updateEmail,
   updateUserAvatarImage,
   updateUserCoverImage,
-  getUserChannelProfile,
+  getUserProfile,
   getWatchHistory
 };
