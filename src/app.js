@@ -28,6 +28,15 @@ app.get("/thread-stream-api/v1/health-check", (req, res) => {
 
 // routes import and declaration
 import userRouter from "./routes/user-routes.js";
-app.use("/thread-stream-api/v1/user", userRouter);
+app.use(
+  "/thread-stream-api/v1/user",
+  userRouter
+);
+
+import videoRouter from "./routes/video-routes.js"
+app.use(
+  "/thread-stream-api/v1/video",
+  videoRouter
+);
 
 export default app;

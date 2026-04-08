@@ -3,7 +3,7 @@ import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const videoSchema = mongoose.Schema(
   {
-    videoFile: {
+    video: {
       type: String,
       required: true,
     },
@@ -23,18 +23,13 @@ const videoSchema = mongoose.Schema(
       required: true,
     },
 
-    videoFile: {
-      type: String,
-      required: true,
-    },
-
     views: {
-      type: String,
+      type: Number,
       default: 0,
     },
 
     isPublished: {
-      type: true,
+      type: Boolean,
       default: true,
     },
 
@@ -43,7 +38,7 @@ const videoSchema = mongoose.Schema(
       ref: "User",
     },
   },
-  { timeStamps: true }
+  { timestamps: true }
 );
 
 videoSchema.plugin(mongooseAggregatePaginate);

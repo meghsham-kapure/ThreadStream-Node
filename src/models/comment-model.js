@@ -18,9 +18,7 @@ const commentSchema = new mongoose.Schema(
       ref: "User"
     }
   },
-  {
-    timestamps: true
-  }
+  { timestamps: true }
 );
 
 commentSchema.plugin(mongooseAggregatePaginate);

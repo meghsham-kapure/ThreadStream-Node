@@ -20,84 +20,97 @@ import verifyJWT from "./../middlewares/auth-middleware.js";
 const userRouter = Router();
 
 userRouter
-  .route("/register").post(
-  upload.fields([
-    { name: "avatarImage", maxCount: 1 },
-    { name: "coverImage", maxCount: 1 },
-  ]),
-  registerUser
-);
+  .route("/register")
+  .post(
+    upload.fields([
+      { name: "avatarImage", maxCount: 1 },
+      { name: "coverImage", maxCount: 1 },
+    ]),
+    registerUser
+  );
 
 userRouter
-  .route("/login").post(
+  .route("/login")
+  .post(
     loginUser
   );
 userRouter
-  .route("/refresh-token").post(
+  .route("/refresh-token")
+  .post(
     refreshAccessToken
   );
 
 // secured routes
 userRouter
-  .route("/logout").post(
+  .route("/logout")
+  .post(
     verifyJWT,
     logoutUser
   );
 userRouter
-  .route("/details").get(
+  .route("/details")
+  .get(
     verifyJWT,
     getUserDetails
   );
 
 userRouter
-  .route("/details/password").patch(
+  .route("/details/password")
+  .patch(
     verifyJWT,
     updatePassword
   );
 
 userRouter
-  .route("/details/fullname").patch(
+  .route("/details/fullname")
+  .patch(
     verifyJWT,
     updateUserFullName
   );
 
 userRouter
-  .route("/details/username").patch(
+  .route("/details/username")
+  .patch(
     verifyJWT,
     updateUserName
   );
 
 userRouter
-  .route("/details/email").patch(
+  .route("/details/email")
+  .patch(
     verifyJWT,
     updateEmail
   );
 
 userRouter
-  .route("/details/avatar-img").patch(
-  verifyJWT,
+  .route("/details/avatar-img")
+  .patch(
+    verifyJWT,
     upload.single('avatarImage'),
-  updateUserAvatarImage
-);
+    updateUserAvatarImage
+  );
 
 userRouter
-  .route("/details/cover-img").patch(
-  verifyJWT,
-  upload.single('coverImage'),
-  updateUserCoverImage
-);
+  .route("/details/cover-img")
+  .patch(
+    verifyJWT,
+    upload.single('coverImage'),
+    updateUserCoverImage
+  );
 
 userRouter
-  .route("/profile/:channelName").get(
+  .route("/profile/:userName")
+  .get(
     verifyJWT,
     getUserProfile
   );
 
 userRouter
-  .route("/history").get(
+  .route("/history")
+  .get(
     verifyJWT,
     getWatchHistory
-  );
+);
 
 
 export default userRouter;

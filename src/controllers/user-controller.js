@@ -58,7 +58,7 @@ const registerUser = asyncHandler(async (request, response) => {
   if (
     request.files &&
     Array.isArray(request.files.avatarImage) &&
-    request.files.avatarImage.length > 0
+    request.files.avatarImage.length == 1
   ) {
     avatarImageLocalPath = request.files?.avatarImage[0]?.path;
   } else {
@@ -409,7 +409,6 @@ const updateUserAvatarImage = asyncHandler(async (request, response) => {
   response.status(200).json(new ApiResponse(200, getUpdatedUser, "User Avatar Image Updated!"))
 });
 
-
 const updateUserCoverImage = asyncHandler(async (request, response) => {
 
   const coverImageLocalPath = request.file?.path;
@@ -439,7 +438,7 @@ const updateUserCoverImage = asyncHandler(async (request, response) => {
 
 const getUserProfile = asyncHandler(async (request, response) => {
   // 1. Taking data from url as user is on channel page which has channel name is url
-  const { channelName } = request.params;
+  const { userName } = request.params;
 
   if (!channelName?.trim()) {
     throw new ApiError(400, "channelName parameter is missing!");

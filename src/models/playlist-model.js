@@ -3,7 +3,7 @@ import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2"
 
 const playlistSchema = new mongoose.Schema(
   {
-    video: {
+    name: {
       type: String,
       required: true,
     },
@@ -24,9 +24,7 @@ const playlistSchema = new mongoose.Schema(
     },
 
   },
-  {
-    timestamps: true
-  }
+  { timestamps: true }
 );
 
 playlistSchema.plugin(mongooseAggregatePaginate);

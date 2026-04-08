@@ -20,13 +20,11 @@ const likeSchema = new mongoose.Schema(
 
     likedBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "LikedBy"
+      ref: "User"
     },
 
   },
-  {
-    timestamps: true
-  }
+  { timestamps: true }
 );
 
 commentSchema.plugin(mongooseAggregatePaginate);

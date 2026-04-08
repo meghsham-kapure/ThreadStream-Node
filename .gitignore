@@ -45,3 +45,4 @@ pnpm-lock.yaml
 
 # But do not ignore this .gitignore itself (if placed inside public/temp)
 !/public/temp/.gitignore
+.ignore/*
