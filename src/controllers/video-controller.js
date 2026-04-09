@@ -209,9 +209,50 @@ const deleteVideo = asyncHandler(async (request, response) => {
 
 });
 
-const getAllVideos = asyncHandler(async (request, response) => {
-  const { page = 1, limit = 10, query, sortBy, sortType, userId } = request.query
-  //TODO: get all videos based on query, sort, pagination
+const searchVideos = asyncHandler(async (request, response) => {
+
+  const { searchText, fromUser, sortingField, sortingOrder, onPage, videosOnPage } = request.query;
+  const matchStageConditions = {
+    isPublished: true,
+  }
+
+  if (searchText) {
+    matchStageConditions.title = {
+      $regex: searchText,
+      $options: "i"
+    }
+  }
+
+  if (fromUser) {
+    if (mongoose.isValidObjectId(fromUser)) {
+      matchStageConditions.owner = new mongoose.Types.ObjectId(fromUser);
+    } else {
+      throw new ApiError(400, "Invalid From UserId is given")
+    }
+  }
+
+  const sortStageCondition = {};
+  if (sortingField) {
+    sortStageCondition[sortingField] = sortingOrder == "desc" ? -1 : 1
+  } else {
+    sortingField.createdAt = -1;
+  }
+
+  const aggregate = Video.aggregate([
+    { $match: matchStageConditions },
+    { $sort: sortStageCondition },
+  ]);
+
+  const paginate = {
+    page: Number(onPage) || 1,
+    limit: Number(videosOnPage) || 10
+  };
+
+  const searchResult = await Video.aggregatePaginate(aggregate, paginate);
+
+  return response
+    .status(200)
+    .json(new ApiResponse(200, searchResult, "Videos fetch successfully!  "));
 });
 
 export {
@@ -221,7 +262,7 @@ export {
   getVideoById,
   updateVideoThumbnail,
   deleteVideo,
-  getAllVideos,
+  searchVideos,
 }
 
 

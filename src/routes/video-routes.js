@@ -7,7 +7,7 @@ import {
   getVideoById,
   updateVideoThumbnail,
   deleteVideo,
-  getAllVideos,
+  searchVideos,
 } from "./../controllers/video-controller.js"
 import verifyJWT from '../middlewares/auth-middleware.js';
 
@@ -61,6 +61,10 @@ videoRouter
 )
 
 videoRouter
-.route("/search/:query")
+  .route("/search")
+  .get(
+    verifyJWT,
+    searchVideos
+  )
 
 export default videoRouter;
