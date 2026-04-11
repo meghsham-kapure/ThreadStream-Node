@@ -40,4 +40,10 @@ import playlistRouter from "./routes/playlist-routes.js";
 app.use("/thread-stream-api/v1/playlist",
   playlistRouter
 );
+
+import postRouter from './routes/post-routes.js';
+app.use(
+  "./thread-stream-api/v1/",
+  postRouter
+)
 export default app;

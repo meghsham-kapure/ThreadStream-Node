@@ -4,6 +4,7 @@ import ApiResponse from "./../utils/api-response.js";
 import ApiError from "./../utils/api-error.js";
 import fs from "node:fs";
 import jwt from "jsonwebtoken";
+import mongoose from 'mongoose';
 import { authCookieOptions } from "./../constants.js";
 import {
   uploadOnCloudinary,
@@ -15,10 +16,7 @@ import {
   validateEmail,
   validatePassword,
 } from "./../utils/validators.js";
-import { lookup } from 'node:dns';
-import { pipeline } from 'node:stream';
-import mongoose from 'mongoose';
-import console from 'node:console';
+
 
 const generateAccessAndRefreshToken = async (userId) => {
   try {
