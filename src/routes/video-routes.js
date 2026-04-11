@@ -13,10 +13,11 @@ import verifyJWT from '../middlewares/auth-middleware.js';
 
 const videoRouter = Router();
 
+videoRouter.use(verifyJWT);
+
 videoRouter
   .route("/upload")
   .post(
-    verifyJWT,
     upload.fields([
       { name: "video", maxCount: 1 },
       { name: "thumbnail", maxCount: 1 }
@@ -27,14 +28,12 @@ videoRouter
 videoRouter
   .route("/update/text-details/:videoId")
   .put(
-    verifyJWT,
     updateVideoTextDetails
   );
 
 videoRouter
   .route("/update/thumbnail/:videoId")
   .patch(
-    verifyJWT,
     upload.single("thumbnail"),
     updateVideoThumbnail
   );
@@ -42,28 +41,24 @@ videoRouter
 videoRouter
   .route("/update/toggle-publishing/:videoId")
   .patch(
-    verifyJWT,
     togglePublishStatus
   );
 
 videoRouter
   .route("/getVideoById/:videoId")
   .get(
-    verifyJWT,
     getVideoById
   )
 
 videoRouter
   .route("/deleteVideo/:videoId")
   .delete(
-    verifyJWT,
     deleteVideo
 )
 
 videoRouter
   .route("/search")
   .get(
-    verifyJWT,
     searchVideos
   )
 

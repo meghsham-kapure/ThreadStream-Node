@@ -27,10 +27,14 @@ app.use(
   userRouter
 );
 
-import videoRouter from "./routes/video-routes.js"
+import videoRouter from "./routes/video-routes.js";
 app.use(
   "/thread-stream-api/v1/video",
   videoRouter
 );
 
+import playlistRouter from "./routes/playlist-routes.js";
+app.use("/thread-stream-api/v1/playlist",
+  playlistRouter
+);
 export default app;

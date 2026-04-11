@@ -9,18 +9,23 @@ const playlistSchema = new mongoose.Schema(
 
     description: {
       type: String,
-      required: true,
+      required: false,
     },
 
     videos: [{
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Video"
+      ref: "Video",
     }],
 
     owner: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User"
+      ref: "User",
     },
+
+    isPublic: {
+      type: Boolean,
+      default: false,
+    }
 
   },
   { timestamps: true }
