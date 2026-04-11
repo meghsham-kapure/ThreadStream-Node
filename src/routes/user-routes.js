@@ -41,51 +41,47 @@ userRouter
   );
 
 // secured routes
+userRouter.use(verifyJWT);
+
 userRouter
   .route("/logout")
   .post(
-    verifyJWT,
     logoutUser
-  );
+);
+
 userRouter
   .route("/details")
   .get(
-    verifyJWT,
     getUserDetails
   );
 
 userRouter
   .route("/details/password")
   .patch(
-    verifyJWT,
     updatePassword
   );
 
 userRouter
   .route("/details/fullname")
   .patch(
-    verifyJWT,
     updateUserFullName
   );
 
 userRouter
   .route("/details/username")
   .patch(
-    verifyJWT,
     updateUserName
   );
 
 userRouter
   .route("/details/email")
   .patch(
-    verifyJWT,
     updateEmail
   );
 
 userRouter
   .route("/details/avatar-img")
   .patch(
-    verifyJWT,
     upload.single('avatarImage'),
     updateUserAvatarImage
   );
@@ -93,7 +89,6 @@ userRouter
 userRouter
   .route("/details/cover-img")
   .patch(
-    verifyJWT,
     upload.single('coverImage'),
     updateUserCoverImage
   );
@@ -101,14 +96,12 @@ userRouter
 userRouter
   .route("/profile/:userName")
   .get(
-    verifyJWT,
     getUserProfile
   );
 
 userRouter
   .route("/history")
   .get(
-    verifyJWT,
     getWatchHistory
 );
 
