@@ -18,7 +18,7 @@ app.use(cookieParser()); // parse cookies
 
 // routes import and declaration
 
-import infoRouter from "./routes/info.routes.js";
+import infoRouter from "./routes/info-routes.js";
 app.use(
   "/thread-stream-api/v1/info",
   infoRouter
