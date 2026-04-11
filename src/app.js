@@ -7,6 +7,7 @@ import helmet from "helmet";
 const app = express();
 
 // express middlewares
+
 app.use(helmet()); // security headers
 app.use(morgan("dev")); // log requests
 app.use(cors({ origin: process.env.CORS_ORIGIN, credentials: true })); // allow frontend access
@@ -15,12 +16,14 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" })); // parse form da
 app.use(express.static("public")); // serve static files
 app.use(cookieParser()); // parse cookies
 
-// app health check
-app.get("/thread-stream-api/v1/health-check", (req, res) => {
-  res.json({ message: "hello world" });
-});
-
 // routes import and declaration
+
+import infoRouter from "./routes/info.routes.js";
+app.use(
+  "/thread-stream-api/v1/info",
+  infoRouter
+);
+
 import userRouter from "./routes/user-routes.js";
 app.use(
   "/thread-stream-api/v1/user",
