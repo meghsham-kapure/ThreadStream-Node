@@ -9,8 +9,8 @@ import {
   toggleVisibility,
   addVideoToPlaylist,
   removeVideoFromPlaylist,
-} from "../controllers/playlist-controller.js"
-import verifyJWT from "../middlewares/auth-middleware.js"
+} from "./../controllers/playlist-controller.js"
+import verifyJWT from "./../middlewares/auth-middleware.js"
 
 const playlistRouter = Router();
 
