@@ -1,6 +1,5 @@
 import mongoose, { isValidObjectId } from "mongoose"
 import Post from "../models/post-model.js"
-import User from "../models/user-model.js"
 import ApiError from "../utils/api-error.js"
 import ApiResponse from "../utils/api-response.js"
 import asyncHandler from "./../utils/async-handler.js"
@@ -167,6 +166,10 @@ const deletePost = asyncHandler(async (request, response) => {
     );
 
 });
+
+const getPostByUserId = asyncHandler(async (request, response) => {
+
+})
 
 export {
   createPost,

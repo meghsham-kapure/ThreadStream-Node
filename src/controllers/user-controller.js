@@ -508,8 +508,6 @@ const getUserProfile = asyncHandler(async (request, response) => {
     }
   ]);
 
-  console.log(getChannels);
-
   if (!getChannels?.length) {
     throw new ApiError(404, "channel does not exists!");
   }
