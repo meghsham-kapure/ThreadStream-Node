@@ -135,7 +135,7 @@ const updatePlaylist = asyncHandler(async (request, response) => {
     playlist.description = description;
   }
 
-  const savedPlaylist = await playlist.save();
+  const savedPlaylist = await playlist.save({ validateBeforeSave: false });
 
   return response
     .status(200)
@@ -159,7 +159,7 @@ const toggleVisibility = asyncHandler(async (request, response) => {
 
   playlist.isPublic = !playlist.isPublic;
 
-  const savedPlaylist = await playlist.save();
+  const savedPlaylist = await playlist.save({ validateBeforeSave: false });
 
   return response
     .status(200)
@@ -193,7 +193,7 @@ const addVideoToPlaylist = asyncHandler(async (request, response) => {
 
   playlist.videos.push(video)
 
-  const savedPlaylist = await playlist.save();
+  const savedPlaylist = await playlist.save({ validateBeforeSave: false });
 
   return response
     .status(200)
@@ -227,7 +227,7 @@ const removeVideoFromPlaylist = asyncHandler(async (request, response) => {
     throw new ApiError(401, "Video not found!")
   }
 
-  const savedPlaylist = await playlist.save();
+  const savedPlaylist = await playlist.save({ validateBeforeSave: false });
 
   return response
     .status(200)

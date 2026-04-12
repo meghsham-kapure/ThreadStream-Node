@@ -25,7 +25,7 @@ postRouter
 
 postRouter
   .route("/:postId")
-  .patch(updatePost)
+  .patch(upload.single("postImage"), updatePost)
   .delete(deletePost);
 
 

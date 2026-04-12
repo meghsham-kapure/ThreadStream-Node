@@ -49,6 +49,7 @@ const createPost = asyncHandler(async (request, response) => {
     postId: post._id,
     userId: post.owner,
     content: post.content,
+    imageAttached: post.imageAttached,
     createdAt: post.createdAt,
   }
 
@@ -95,11 +96,77 @@ const getUserPosts = asyncHandler(async (request, response) => {
 
 //TODO: update post
 const updatePost = asyncHandler(async (request, response) => {
-})
+
+  const postId = new mongoose.Types.ObjectId(request.params.postId);
+  const deleteImage = request.body.deleteImage;
+  const content = request.body.content;
+  const imageAttached = request.file || request.body.imageAttached;
+
+  const post = await Post.findById(postId);
+
+  if (!post) {
+    throw new ApiError(404, "Post not found!");
+  }
+
+  if (content) {
+    if (post.content != content) {
+      post.content = content;
+    }
+  }
+
+  if (deleteImage) {
+    await removeFromCloudinary(post.imageAttached);
+    post.imageAttached = undefined;
+  }
+
+  let cloudinaryImageUpload;
+
+  if (imageAttached) {
+
+    if (!imageAttached.mimetype.startsWith("image")) {
+      fs.unlinkSync(localImage.path);
+      throw new ApiError(400, "Only image attachment are allowed!");
+    }
+
+    cloudinaryImageUpload = await uploadOnCloudinary(imageAttached.path);
+
+    if (!cloudinaryImageUpload) {
+      throw new ApiError(400, "Unsupported mentioned media!");
+    }
+
+    await removeFromCloudinary(post.imageAttached);
+
+    post.imageAttached = cloudinaryImageUpload.url;
+
+  }
+
+  await post.save({ validateBeforeSave: false })
+
+  response.status(200)
+    .json(new ApiResponse(200, post, "Post Updated Successfully!"))
+
+});
 
 //TODO: delete post
 const deletePost = asyncHandler(async (request, response) => {
-})
+
+  const postId = new mongoose.Types.ObjectId(request.params.postId);
+
+  const deletedPost = await Post.findByIdAndDelete(postId);
+
+  if (!deletedPost) {
+    throw new ApiError(404, "Post not found!")
+  }
+
+  await removeFromCloudinary(deletedPost.imageAttached);
+
+  return response
+    .status(200)
+    .json(
+      new ApiResponse(200, deletedPost, `Posts deleted Successfully `)
+    );
+
+});
 
 export {
   createPost,
