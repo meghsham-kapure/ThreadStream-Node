@@ -1,25 +1,16 @@
 import mongoose from 'mongoose';
-import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2"
 
 const postSchema = new mongoose.Schema(
   {
+    
     content: {
       type: String,
       required: true,
     },
-    images: {
-      type: [String],
-      validate: {
-        validator: function (value) {
-          return value.length <= 5;
-        },
-        message: "Max 5 images are allowed",
-      },
-    },
 
-    mentions: {
+    imageAttached: {
       type: String,
-      trim: true,
+      trim: true
     },
 
     owner: {
@@ -28,7 +19,9 @@ const postSchema = new mongoose.Schema(
     },
 
   },
+
   { timestamps: true }
+
 );
 
 const Post = mongoose.model("Post", postSchema);

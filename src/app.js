@@ -43,7 +43,7 @@ app.use("/thread-stream-api/v1/playlist",
 
 import postRouter from './routes/post-routes.js';
 app.use(
-  "./thread-stream-api/v1/",
+  "/thread-stream-api/v1/post",
   postRouter
 )
 export default app;

@@ -8,7 +8,6 @@ import {
 import verifyJWT from "./../middlewares/auth-middleware.js"
 import upload from "./../middlewares/multer-upload-middleware.js";
 
-
 const postRouter = Router();
 
 postRouter.use(verifyJWT);
@@ -16,11 +15,7 @@ postRouter.use(verifyJWT);
 postRouter
   .route("/")
   .post(
-    upload.fields([
-      {
-        name: "postImage", maxCount: 5
-      },
-    ]),
+    upload.single("postImage"),
     createPost
   );
 
