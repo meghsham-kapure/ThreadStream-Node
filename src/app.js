@@ -45,5 +45,13 @@ import postRouter from './routes/post-routes.js';
 app.use(
   "/thread-stream-api/v1/post",
   postRouter
-)
+);
+
+
+import commentRouter from './routes/comment-routes.js';
+app.use(
+  "/thread-stream-api/v1/comment",
+  postRouter
+);
+
 export default app;
