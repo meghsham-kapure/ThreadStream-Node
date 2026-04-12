@@ -235,7 +235,7 @@ const searchVideos = asyncHandler(async (request, response) => {
   if (sortingField) {
     sortStageCondition[sortingField] = sortingOrder == "desc" ? -1 : 1
   } else {
-    sortingField.createdAt = -1;
+    sortStageCondition.createdAt = -1;
   }
 
   const aggregate = Video.aggregate([

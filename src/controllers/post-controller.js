@@ -61,8 +61,37 @@ const createPost = asyncHandler(async (request, response) => {
 // TODO: get user posts
 const getUserPosts = asyncHandler(async (request, response) => {
 
+  const { page, limit } = request.body
+  const userId = new mongoose.Types.ObjectId(request.params.userId);
 
-})
+  const aggregationFilter = Post.aggregate([
+    { $match: { owner: { $eq: userId } } },
+    { $sort: { createdAt: -1 } },
+    {
+      $project: {
+        _id: 1,
+        owner: 1,
+        content: 1,
+        imageAttached: 1,
+        createdAt: 1
+      }
+    }
+  ]);
+
+  const paginateFilter = {
+    page: Number(page) || 1,
+    limit: Number(limit) || 10
+  };
+
+  const posts = await Post.aggregatePaginate(aggregationFilter, paginateFilter);
+
+  return response
+    .status(200)
+    .json(
+      new ApiResponse(200, posts, `Posts fetched Successfully on page ${page}`)
+    );
+
+});
 
 //TODO: update post
 const updatePost = asyncHandler(async (request, response) => {
