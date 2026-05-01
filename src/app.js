@@ -51,7 +51,7 @@ app.use(
 import commentRouter from './routes/comment-routes.js';
 app.use(
   "/thread-stream-api/v1/comment",
-  postRouter
+  commentRouter
 );
 
 export default app;

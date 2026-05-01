@@ -8,14 +8,22 @@ const commentSchema = new mongoose.Schema(
       required: true
     },
 
-    video: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Video"
+    commentedOn: {
+      type: String,
+      required: true,
+      enum: ['Video', 'Post']
     },
 
+    commentedOnTarget: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      refPath: 'commentedOn'
+    },
+    
     owner: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User"
+      ref: "User",
+      required: true
     }
   },
   { timestamps: true }

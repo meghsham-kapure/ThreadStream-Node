@@ -4,7 +4,7 @@ import { } from "./../controllers/info-controller.js"
 const infoRouter = Router();
 
 infoRouter.route("/health-check")
-  .get((req, res) => {
+  .get((request, response) => {
     res.json({ message: "hello world" });
   })
 
